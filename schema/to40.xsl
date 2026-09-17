@@ -67,6 +67,9 @@
   <xsl:template
     match="accidental[preceding-sibling::accidental] | key-accidental[preceding-sibling::key-accidental]"/>
 
+  <xsl:template
+    match="voice-directions | voice-direction"/>
+
   <!--
     Convert score version attribute to 4.0.
   -->

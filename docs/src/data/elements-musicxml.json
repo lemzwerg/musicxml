@@ -5402,6 +5402,44 @@
       "name": "metronome-beam",
       "documentation": "The <metronome-beam> element works like the <beam> element in defining metric relationships, but does not include all the attributes available in the <beam> element."
    },
+   "voice-directions": {
+      "children": {
+         "type": "element",
+         "value": "voice-direction",
+         "min": "0",
+         "max": "unbounded"
+      },
+      "parents": [
+         "attributes"
+      ],
+      "name": "voice-directions",
+      "documentation": "The <voice-directions> element contains a number of <voice-direction> elements which distinguish between upper and lower voices on a staff."
+   },
+   "voice-direction": {
+      "children": {
+         "type": "type",
+         "value": "up-down"
+      },
+      "parents": [
+         "voice-directions"
+      ],
+      "attributes": [
+         {
+            "required": true,
+            "name": "voice",
+            "documentation": "Refers to the voice to which this orientation applies. It is a required value.",
+            "type": "xs:string"
+         },
+         {
+            "required": false,
+            "name": "staff",
+            "documentation": "Refers to the staff number to which this orientation applies. A value of 1 is assumed if not present.",
+            "type": "staff-number"
+         }
+      ],
+      "name": "voice-direction",
+      "documentation": "The <voice-direction> element distinguishes between upper and lower voices on a staff. This information is typically used to generate default stem directions when the stems are otherwise unspecified. Each <voice-direction> element associates a stem direction (up\/down) with a voice\/staff combination. The staff attribute is useful for cross-staff voices where stem direction is different per staff - this value can be omitted for single-staff parts. The <note\/stem> value overrides the direction introduced by <voice-direction>. If no <voice-direction> element is present for a voice, its direction is unspecified and application-dependent."
+   },
    "measure-numbering": {
       "children": {
          "type": "type",
@@ -9145,6 +9183,12 @@
                "value": "measure-style",
                "min": "0",
                "max": "unbounded"
+            },
+            {
+               "type": "element",
+               "value": "voice-directions",
+               "min": "0",
+               "max": "1"
             }
          ],
          "min": "1",

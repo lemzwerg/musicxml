@@ -66,13 +66,15 @@ test_001_schema_valid() {
     XML_CATALOG_FILES=./catalog.xml xmllint --schema XMLSchema.xsd ../schema/sounds.xsd --noout || return $?
 }
 
-test_002_suite_syntax() {
+test_002_syntax() {
     #
     # Verify that all MusicXML files in the test suite are syntactically correct.
     #
     find -L files \( -name '*.xml' -o -name '*.musicxml' \) -print0 | sort -z | while read -d $'\0' file
     do
-        local assert=$(get_assertion "$(basename "$file")" "musicxml.xsd")
+        local basename=$(basename "$file")
+        if [[ -n "$TEST_FILE" && ! "$basename" =~ "$TEST_FILE" ]]; then continue; fi
+        local assert=$(get_assertion "$basename" "musicxml.xsd")
         if [[ $assert == "skip" ]]; then continue; fi
 
         XML_CATALOG_FILES=../schema/catalog.xml xmllint --schema ../schema/musicxml.xsd "$file" --noout
@@ -86,14 +88,16 @@ test_002_suite_syntax() {
     done
 }
 
-test_003_suite_schematron() {
+test_003_schematron() {
     #
     # Verify that all MusicXML files in the test suite pass the semantic validations.
     #
     find -L files \( -name '*.xml' -o -name '*.musicxml' \) -print0 | sort -z | while read -d $'\0' file
     do
+        local basename=$(basename "$file")
+        if [[ -n "$TEST_FILE" && ! "$basename" =~ "$TEST_FILE" ]]; then continue; fi
         while IFS= read -r schema; do
-            local assert=$(get_assertion "$(basename "$file")" "$schema")
+            local assert=$(get_assertion "$basename" "$schema")
             if [[ $assert == "skip" ]]; then continue; fi
 
             ./schematron.py "validations/${schema/.sch/.xsl}" "$file"
@@ -104,7 +108,7 @@ test_003_suite_schematron() {
             elif [[ $assert == "pass" && $status != 0 ]]; then
                 exit $status
             fi
-        done < <(get_validations "$(basename "$file")")
+        done < <(get_validations "$basename")
     done
 }
 
@@ -122,10 +126,12 @@ test_004_previous_version() {
 
     find -L files \( -name '*.xml' -o -name '*.musicxml' \) -print0 | sort -z | while read -d $'\0' file
     do
-        local assert=$(get_assertion "$(basename "$file")" "$PREVIOUS_VERSION_XSL")
+        local basename=$(basename "$file")
+        if [[ -n "$TEST_FILE" && ! "$basename" =~ "$TEST_FILE" ]]; then continue; fi
+        local assert=$(get_assertion "$basename" "$PREVIOUS_VERSION_XSL")
         if [[ $assert == "skip" ]]; then continue; fi
 
-        local previous="$tempdir/$(basename "$file")"
+        local previous="$tempdir/$basename"
         ./transform.py "../schema/$PREVIOUS_VERSION_XSL" "$file" > "$previous" || exit $?
         XML_CATALOG_FILES="$tempdir/schema/catalog.xml" xmllint --schema "$tempdir/schema/musicxml.xsd" "$previous" --noout
         local status=$?

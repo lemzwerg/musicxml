@@ -528,6 +528,11 @@
                      }
                   }
                },
+               "voice-directions": {
+                  "voice-direction": {
+                     
+                  }
+               },
                "part-symbol": {
                   
                },
@@ -2321,6 +2326,11 @@
                      "except-voice": {
                         
                      }
+                  }
+               },
+               "voice-directions": {
+                  "voice-direction": {
+                     
                   }
                },
                "part-symbol": {
