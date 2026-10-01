@@ -1,0 +1,29 @@
+---
+import LinkIcon from '@assets/icons/link-square-01-twotone-rounded.svg';
+import { siteInfo } from '../site.config';
+
+let redirect = null;
+if (siteInfo.redirects) {
+	const index = Object.values(siteInfo.redirects).findIndex(redirect => redirect === Astro.url.pathname);
+	if (index > -1) {
+		// This is not a local URL so we're not using url() function.
+		redirect = `${import.meta.env.BASE_URL}${Object.keys(siteInfo.redirects)[index]}`;
+	}
+}
+
+const stable = (redirect ?? Astro.url.pathname).replace(import.meta.env.BASE_URL, 'musicxml40');
+const linkOutTxt = siteInfo.isDev ? 'draft' : 'stable';
+const linkOutHref = siteInfo.isDev ? `https://w3c-cg.github.io${Astro.url.pathname}` : `https://www.w3.org/2021/06/${stable}`;
+const linkOutTarget = siteInfo.isDev ? 'w3c-cg.github.io' : 'w3c.org';
+---
+
+{
+	<a
+		class="flex items-center justify-center text-sm absolute w-full top-14 left-0 py-1.5 bg-olive-100/80 backdrop-blur border-b border-neutral-300"
+		href={linkOutHref}
+		target={linkOutTarget}
+		>
+		<span>View latest {linkOutTxt} version</span>
+		<LinkIcon class="ml-2 w-4" />
+	</a>
+}
